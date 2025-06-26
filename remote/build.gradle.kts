@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
+    implementation(project(":common"))
 
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)

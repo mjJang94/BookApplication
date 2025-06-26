@@ -1,9 +1,9 @@
 plugins {
-//    alias(libs.plugins.android.library)
-//    alias(libs.plugins.kotlin.android)
+    id("module.kotlin")
 }
-
 
 dependencies {
 
+    implementation(project(":domain"))
+    implementation(project(":data-resource"))
 }

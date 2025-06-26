@@ -9,5 +9,9 @@ pluginManagement {
 rootProject.name = "BookApplication"
 include(":app")
 include(":remote")
-include(":data")
 include(":ui")
+include(":data")
+include(":common")
+include(":domain")
+include(":data-resource")
+include(":presentation")

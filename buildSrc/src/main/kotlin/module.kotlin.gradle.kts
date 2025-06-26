@@ -10,6 +10,8 @@ val libs: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().name
 
 
 dependencies {
+    implementation(libs.getLibrary("coroutines.core"))
+
     implementation(libs.getLibrary("hilt.core"))
     kapt(libs.getLibrary("hilt.compiler"))
 }
