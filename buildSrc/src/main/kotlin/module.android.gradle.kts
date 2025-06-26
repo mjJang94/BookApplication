@@ -32,16 +32,14 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    buildFeatures {
-        compose = true
-    }
 }
-
 
 val libs: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
 dependencies {
+    implementation(libs.getLibrary("androidx.core.ktx"))
+    implementation(libs.getLibrary("androidx.lifecycle.runtime.ktx"))
+
     implementation(libs.getLibrary("hilt.android"))
     kapt(libs.getLibrary("hilt.compiler"))
 }

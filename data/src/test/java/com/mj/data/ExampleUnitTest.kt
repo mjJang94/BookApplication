@@ -1,4 +1,4 @@
-package com.mj.bookapplication
+package com.mj.data
 
 import org.junit.Test
 
