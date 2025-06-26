@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -32,11 +33,25 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
     implementation(project(":ui"))
+    implementation(project(":remote"))
+    implementation(project(":data"))
+    implementation(project(":common"))
+    implementation(project(":domain"))
+    implementation(project(":presentation"))
+
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

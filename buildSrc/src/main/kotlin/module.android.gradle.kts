@@ -1,5 +1,6 @@
 plugins {
     id("com.android.library")
+    id("org.jetbrains.kotlin.android")
     id("kotlin-android")
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
@@ -13,7 +14,7 @@ android {
 
     buildTypes {
         debug {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             consumerProguardFiles("proguard-rules.pro")
         }
         release {

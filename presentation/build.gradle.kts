@@ -9,5 +9,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.viewmodel)
+
     implementation(project(":domain"))
+    implementation(project(":data-resource"))
 }

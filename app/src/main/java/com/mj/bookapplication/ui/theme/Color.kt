@@ -1,4 +1,4 @@
-package com.mj.ui.common
+package com.mj.bookapplication.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
