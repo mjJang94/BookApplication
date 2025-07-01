@@ -8,6 +8,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.mj.presentation.search.model.BookModel
 import com.mj.presentation.search.search.BookSearchViewModel
 import com.mj.ui.screen.SearchScreen
 
@@ -23,11 +26,12 @@ fun NavGraph() {
                     navController.getBackStackEntry("main_graph")
                 )
 
-                val bookData by searchViewModel.books.collectAsStateWithLifecycle()
+//                val bookData by searchViewModel.books.collectAsStateWithLifecycle()
+                val bookData= searchViewModel.bookPagingDataFlow.collectAsLazyPagingItems()
 
                 SearchScreen(
                     bookData = bookData,
-                    onSearch = { query -> searchViewModel.search(query, 0) }
+                    onSearch = { query -> searchViewModel.search(query) }
                 )
             }
         }

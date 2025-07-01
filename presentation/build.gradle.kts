@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.viewmodel)
+    implementation(libs.androidx.paging.runtime)
 
     implementation(project(":domain"))
     implementation(project(":data-resource"))

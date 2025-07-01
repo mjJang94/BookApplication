@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookRepository {
 
-    fun getBooks(query: String, startIndex: Int): Flow<DataResource<List<Book>>>
+    fun getBooksFlow(query: String, page: Int): Flow<DataResource<List<Book>>>
+    suspend fun getBooks(query: String, page: Int): List<Book>
 }
