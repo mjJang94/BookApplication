@@ -2,13 +2,20 @@ package com.mj.bookapplication.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -39,9 +46,20 @@ fun BookApplicationTheme(
         else -> LightColorScheme
     }
 
+    val density = LocalDensity.current
+
+    val statusBarHeightDp = with(density) { WindowInsets.statusBars.getTop(density).toDp() }
+    val navigationBarHeightDp = with(density) { WindowInsets.navigationBars.getBottom(density).toDp() }
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            Column(
+                modifier = Modifier.padding(top = statusBarHeightDp, bottom = navigationBarHeightDp)
+            ) {
+                content()
+            }
+        }
     )
 }
