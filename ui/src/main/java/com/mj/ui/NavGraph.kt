@@ -1,7 +1,9 @@
 package com.mj.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,7 +22,13 @@ fun NavGraph() {
                 val searchViewModel: BookSearchViewModel = hiltViewModel(
                     navController.getBackStackEntry("main_graph")
                 )
-                SearchScreen(searchViewModel)
+
+                val bookData by searchViewModel.books.collectAsStateWithLifecycle()
+
+                SearchScreen(
+                    bookData = bookData,
+                    onSearch = { query -> searchViewModel.search(query, 0) }
+                )
             }
         }
     }
