@@ -12,5 +12,5 @@ data class BookResponse(
 ) : RemoteMapper<BookEntity> {
 
     override fun toData(): BookEntity =
-        BookEntity(id, etag, selfLink, volumeInfo.toData())
+        BookEntity(kind, id, etag, selfLink, volumeInfo.toData())
 }
