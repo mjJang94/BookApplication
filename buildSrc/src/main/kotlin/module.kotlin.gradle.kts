@@ -1,6 +1,3 @@
-import gradle.kotlin.dsl.accessors._df1a3a942e90e698d12fe13b136cffec.implementation
-import gradle.kotlin.dsl.accessors._df1a3a942e90e698d12fe13b136cffec.kapt
-
 plugins {
     id("kotlin")
     id("kotlin-kapt")
