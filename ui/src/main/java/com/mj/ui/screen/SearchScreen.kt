@@ -50,51 +50,60 @@ internal fun SearchScreen(
             onSearch = { q -> onSearch(q) }
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(count = bookData.itemCount) { index ->
-                val book = bookData[index]
-                if (book != null) {
-                    Text(book.volumeInfo.title)
-                } else {
-                    Text("검색 결과 없음")
-                }
+        if (bookData.itemCount < 1) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Text("검색어를 입력해주세요.")
             }
-
-            bookData.apply {
-                when {
-                    loadState.refresh is LoadState.Loading -> {
-                        item {
-                            Column(
-                                modifier = Modifier.fillParentMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                CircularProgressIndicator()
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(count = bookData.itemCount) { index ->
+                    val book = bookData[index]
+                    if (book != null) {
+                        Text(book.volumeInfo.title)
+                    } else {
+                        Text("검색 결과 없음")
+                    }
+                }
+                bookData.apply {
+                    when {
+                        loadState.refresh is LoadState.Loading -> {
+                            item {
+                                Column(
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center,
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
-                    }
 
-                    loadState.append is LoadState.Loading -> {
-                        item {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                        loadState.append is LoadState.Loading -> {
+                            item {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center,
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+                                }
                             }
                         }
-                    }
 
-                    loadState.refresh is LoadState.Error -> {
-                        val e = bookData.loadState.refresh as LoadState.Error
-                        item {
-                            Text(
-                                modifier = Modifier
-                                    .fillParentMaxSize()
-                                    .clickable { retry() },
-                                text = "데이터 로드 실패: ${e.error.localizedMessage}",
-                            )
+                        loadState.refresh is LoadState.Error -> {
+                            val e = bookData.loadState.refresh as LoadState.Error
+                            item {
+                                Text(
+                                    modifier = Modifier
+                                        .fillParentMaxSize()
+                                        .clickable { retry() },
+                                    text = "데이터 로드 실패: ${e.error.localizedMessage}",
+                                )
+                            }
                         }
                     }
                 }

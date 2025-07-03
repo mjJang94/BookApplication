@@ -10,5 +10,5 @@ class BookRemoteDataSourceImpl @Inject constructor(
 ): BookRemoteDataSource {
 
     override suspend fun getSummaryBooks(query: String, startIndex: Int): List<BookEntity> =
-        apiService.getBookSearch(query = query, startIndex = startIndex).items.map { it.toData() }
+        apiService.getBookSearch(query = query, startIndex = startIndex).items.orEmpty().map { it.toData() }
 }
