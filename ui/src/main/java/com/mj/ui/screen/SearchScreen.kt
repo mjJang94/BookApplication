@@ -3,10 +3,13 @@ package com.mj.ui.screen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Search
@@ -23,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -42,12 +46,15 @@ internal fun SearchScreen(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         QueryTextField(
-            onSearch = { q -> onSearch(q) }
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
+            onSearch = { q -> onSearch(q) },
         )
 
         if (bookData.itemCount < 1) {
@@ -70,18 +77,6 @@ internal fun SearchScreen(
                 }
                 bookData.apply {
                     when {
-                        loadState.refresh is LoadState.Loading -> {
-                            item {
-                                Column(
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            }
-                        }
-
                         loadState.append is LoadState.Loading -> {
                             item {
                                 Column(
@@ -113,6 +108,15 @@ internal fun SearchScreen(
 }
 
 @Composable
+private fun BookItem(data: VolumeModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+    }
+}
+
+@Composable
 private fun QueryTextField(
     modifier: Modifier = Modifier,
     onSearch: (String) -> Unit
@@ -127,6 +131,17 @@ private fun QueryTextField(
         onValueChange = { query = it },
         label = { Text("검색어") },
         singleLine = true,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                if (lastSearchedQuery == query) return@KeyboardActions
+                onSearch(query)
+                lastSearchedQuery = query
+                keyboardController?.hide()
+            }
+        ),
         trailingIcon = {
             val image = if (query.isBlank()) {
                 Icons.Outlined.Search
@@ -137,11 +152,10 @@ private fun QueryTextField(
             val description = if (query.isBlank()) "검색어 입력하기" else "검색"
             IconButton(onClick = {
                 if (query.isNotBlank()) {
-                    if (lastSearchedQuery != query) {
-                        onSearch(query)
-                        lastSearchedQuery = query
-                        keyboardController?.hide()
-                    }
+                    if (lastSearchedQuery == query) return@IconButton
+                    onSearch(query)
+                    lastSearchedQuery = query
+                    keyboardController?.hide()
                 }
             }) {
                 Icon(image, description)
@@ -149,19 +163,6 @@ private fun QueryTextField(
         }
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun QueryTextFieldPreview() {
-    PreviewTheme {
-        Column {
-            QueryTextField(
-                onSearch = {}
-            )
-        }
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable

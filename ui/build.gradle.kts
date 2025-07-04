@@ -31,4 +31,6 @@ dependencies {
     implementation(libs.androidx.compose.paging)
 
     implementation(libs.androidx.hilt.navigation)
+    implementation(libs.coli.compose)
+    implementation(libs.coli.network)
 }
