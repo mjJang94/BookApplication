@@ -1,12 +1,13 @@
 package com.mj.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +35,11 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.mj.presentation.search.model.BookModel
+import com.mj.presentation.search.model.ImageLinksModel
 import com.mj.presentation.search.model.VolumeModel
 import com.mj.ui.theme.PreviewTheme
 import kotlinx.coroutines.flow.Flow
@@ -70,7 +76,7 @@ internal fun SearchScreen(
                 items(count = bookData.itemCount) { index ->
                     val book = bookData[index]
                     if (book != null) {
-                        Text(book.volumeInfo.title)
+                        BookItem(book.volumeInfo)
                     } else {
                         Text("검색 결과 없음")
                     }
@@ -109,10 +115,25 @@ internal fun SearchScreen(
 
 @Composable
 private fun BookItem(data: VolumeModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
 
+
+        AsyncImage(
+            modifier = Modifier.size(100.dp),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(data.imageLinks.smallThumbnail)
+                .crossfade(true)
+                .build(),
+            contentDescription = "Book Thumbnail",
+            onError = { error ->
+                Log.e("AsyncImage", "이미지 로딩 실패: ${error.result.throwable}")
+            }
+        )
+        Text(data.title)
     }
 }
 
@@ -181,6 +202,10 @@ private fun SearchScreenPreview() {
                     publishedDate = "2023-01-01",
                     printType = "book#$index",
                     infoLink = "",
+                    imageLinks = ImageLinksModel(
+                        smallThumbnail = "",
+                        thumbnail = "",
+                    )
                 )
             )
         }

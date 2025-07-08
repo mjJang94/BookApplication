@@ -7,7 +7,8 @@ data class VolumeModel(
     val authors: List<String>,
     val publishedDate: String,
     val printType: String,
-    val infoLink: String
+    val infoLink: String,
+    val imageLinks: ImageLinksModel,
 )
 
 fun Volume.toPresentation(): VolumeModel = VolumeModel(
@@ -15,5 +16,6 @@ fun Volume.toPresentation(): VolumeModel = VolumeModel(
     authors,
     publishedDate,
     printType,
-    infoLink
+    infoLink,
+    imageLinks.toPresentation(),
 )
