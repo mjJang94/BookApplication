@@ -26,13 +26,7 @@ fun NavGraph() {
                     navController.getBackStackEntry("main_graph")
                 )
 
-//                val bookData by searchViewModel.books.collectAsStateWithLifecycle()
-                val bookData= searchViewModel.bookPagingDataFlow.collectAsLazyPagingItems()
-
-                SearchScreen(
-                    bookData = bookData,
-                    onSearch = { query -> searchViewModel.search(query) }
-                )
+                SearchScreen(viewModel = searchViewModel)
             }
         }
     }

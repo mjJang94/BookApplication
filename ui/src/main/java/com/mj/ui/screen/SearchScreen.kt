@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -41,14 +43,30 @@ import coil3.request.crossfade
 import com.mj.presentation.search.model.BookModel
 import com.mj.presentation.search.model.ImageLinksModel
 import com.mj.presentation.search.model.VolumeModel
+import com.mj.presentation.search.search.BookSearchViewModel
 import com.mj.ui.theme.PreviewTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 internal fun SearchScreen(
-    bookData: LazyPagingItems<BookModel>,
-    onSearch: (String) -> Unit,
+    viewModel: BookSearchViewModel
+) {
+    val pagingBookData = viewModel.bookPagingDataFlow.collectAsLazyPagingItems()
+    val searchStart by viewModel.isSearchStarted.collectAsStateWithLifecycle()
+
+    SearchScreenContent(
+        bookItems = pagingBookData,
+        searchStart = searchStart,
+        search = { q -> viewModel.search(q) }
+    )
+}
+
+@Composable
+private fun SearchScreenContent(
+    bookItems: LazyPagingItems<BookModel>,
+    searchStart: Boolean,
+    search: (String) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -60,49 +78,68 @@ internal fun SearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp),
-            onSearch = { q -> onSearch(q) },
+            onSearch = { q -> search(q) },
         )
 
-        if (bookData.itemCount < 1) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text("검색어를 입력해주세요.")
-            }
-        } else {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(count = bookData.itemCount) { index ->
-                    val book = bookData[index]
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            if (searchStart) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
+            } else if (bookItems.itemCount < 1) {
+                item {
+                    Text(
+                        text = "검색어를 입력해 주세요.",
+                    )
+                }
+            } else {
+                items(count = bookItems.itemCount) { index ->
+                    val book = bookItems[index]
                     if (book != null) {
                         BookItem(book.volumeInfo)
                     } else {
-                        Text("검색 결과 없음")
+                        Text("존재하지 않는 도서입니다.")
                     }
                 }
-                bookData.apply {
+                bookItems.apply {
                     when {
-                        loadState.append is LoadState.Loading -> {
-                            item {
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center,
-                                ) {
-                                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-                                }
-                            }
-                        }
-
                         loadState.refresh is LoadState.Error -> {
-                            val e = bookData.loadState.refresh as LoadState.Error
+                            val e = loadState.refresh as LoadState.Error
                             item {
                                 Text(
                                     modifier = Modifier
                                         .fillParentMaxSize()
                                         .clickable { retry() },
                                     text = "데이터 로드 실패: ${e.error.localizedMessage}",
+                                )
+                            }
+                        }
+
+                        loadState.append is LoadState.Loading -> {
+                            Log.d("SearchScreen", "loadState.append is LoadState.Loading")
+                            item {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                        .wrapContentWidth(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+
+                        loadState.append is LoadState.Error -> {
+                            val e = loadState.append as LoadState.Error
+                            item {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { retry() },
+                                    text = "다음 페이지 로드 실패: ${e.error.localizedMessage}"
                                 )
                             }
                         }
@@ -210,9 +247,10 @@ private fun SearchScreenPreview() {
             )
         }
 
-        SearchScreen(
-            bookData = rememberPreviewLazyPagingItems(data = sampleBooks),
-            onSearch = {},
+        SearchScreenContent(
+            bookItems = rememberPreviewLazyPagingItems(data = sampleBooks),
+            searchStart = false,
+            search = {},
         )
     }
 }
