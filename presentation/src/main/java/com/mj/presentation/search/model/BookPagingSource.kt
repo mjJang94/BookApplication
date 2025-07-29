@@ -13,11 +13,7 @@ class BookPagingSource(
         val currentPage = params.key ?: 1
         val response = dispatch(currentPage).map { it.toPresentation() }
 
-        val nextKey = if (response.size < params.loadSize) {
-            null
-        }else {
-            currentPage + 1
-        }
+        val nextKey = if (response.size < 20) null else currentPage + 1
 
         return LoadResult.Page(
             data = response,
