@@ -32,9 +32,11 @@ class BookSearchViewModel @Inject constructor(
     private val _books = MutableStateFlow<List<BookModel>>(emptyList())
     val books = _books.asStateFlow()
 
-    private val _query = MutableSharedFlow<String>()
+    val isSearchStarted = MutableStateFlow(false)
+    private val _query = MutableStateFlow("")
     fun search(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            isSearchStarted.value = true
             _query.emit(query)
 
         }
@@ -47,9 +49,20 @@ class BookSearchViewModel @Inject constructor(
             Pager(
                 config = PagingConfig(
                     pageSize = 20,
-                    enablePlaceholders = false
+                    enablePlaceholders = false,
+                    initialLoadSize = 20,
                 ),
-                pagingSourceFactory = { BookPagingSource{ page -> getBookUseCase(q, page)} }
+                pagingSourceFactory = {
+                    BookPagingSource { page ->
+                        runCatching {
+                            getBookUseCase(q, page)
+                        }.onSuccess {
+                            isSearchStarted.value = false
+                        }.onFailure {
+                            isSearchStarted.value = false
+                        }.getOrDefault(emptyList())
+                    }
+                }
             ).flow.cachedIn(viewModelScope)
         }
     }
@@ -61,6 +74,5 @@ class BookSearchViewModel @Inject constructor(
 
 
     sealed class Event : ViewEvent {
-
     }
 }
