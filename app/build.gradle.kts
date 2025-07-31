@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":ui"))
     implementation(project(":remote"))
+    implementation(project(":local"))
     implementation(project(":data"))
     implementation(project(":common"))
     implementation(project(":domain"))

@@ -24,6 +24,11 @@ retrofit = "3.0.0"
 gson = "2.13.1"
 
 coil = "3.2.0"
+junitJunit = "4.13.2"
+androidxJunit = "1.2.1"
+espressoCoreVersion = "3.6.1"
+
+datastore = "1.1.0"
 
 [libraries]
 gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -47,6 +52,9 @@ androidx-hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", v
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "compose-paging"}
 androidx-compose-paging = { module = "androidx.paging:paging-compose", version.ref = "compose-paging"}
 
+#DataStore
+datastore-pref = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore"}
+
 #Hilt
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "dagger" }
 hilt-gradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
@@ -63,6 +71,9 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 
 coli-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coli-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCoreVersion" }
 
 
 
