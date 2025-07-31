@@ -154,13 +154,16 @@ private fun SearchScreenContent(
                     searchDetailVisible = false
                 })
         } else {
-            BookList(searchStart, bookItems)
+            BookList(searchStart = searchStart, items = bookItems)
         }
     }
 }
 
 @Composable
-private fun ColumnScope.BookList(searchStart: Boolean, bookItems: LazyPagingItems<BookModel>) {
+private fun ColumnScope.BookList(
+    searchStart: Boolean,
+    items: LazyPagingItems<BookModel>,
+    ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -168,17 +171,17 @@ private fun ColumnScope.BookList(searchStart: Boolean, bookItems: LazyPagingItem
     ) {
         when {
             searchStart -> item { LoadingItem() }
-            bookItems.itemSnapshotList.isEmpty() -> item { WaitingItem() }
+            items.itemSnapshotList.isEmpty() -> item { WaitingItem() }
             else -> {
-                items(count = bookItems.itemCount) { index ->
-                    val book = bookItems[index]
+                items(count = items.itemCount) { index ->
+                    val book = items[index]
                     if (book != null) {
                         BookItem(book.volumeInfo)
                     } else {
                         EmptyItem()
                     }
                 }
-                bookItems.apply {
+                items.apply {
                     when {
                         loadState.refresh is LoadState.Error -> {
                             val e = loadState.refresh as LoadState.Error

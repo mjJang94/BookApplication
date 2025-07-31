@@ -19,22 +19,22 @@ class BookLocalDataSourceImpl @Inject constructor(
 
     override fun searchKeywordsFlow(): Flow<List<String>> =
         dataStore.data.map { preferences ->
-            preferences[SEARCH_KEYWORD]?.toList() ?: emptyList()
+            preferences[SEARCH_KEYWORD]?.toList()?.sortedDescending() ?: emptyList()
         }
 
     override suspend fun addSearchKeyword(keyword: String) {
         dataStore.edit { preferences ->
-            val current = preferences[SEARCH_KEYWORD]?.toMutableSet() ?: mutableSetOf()
+            val current = preferences[SEARCH_KEYWORD]?.toMutableList() ?: mutableListOf()
             current.add(keyword)
-            preferences[SEARCH_KEYWORD] = current
+            preferences[SEARCH_KEYWORD] = current.toSet()
         }
     }
 
     override suspend fun deleteKeyword(keyword: String) {
         dataStore.edit { preferences ->
-            val current = preferences[SEARCH_KEYWORD]?.toMutableSet() ?: return@edit
+            val current = preferences[SEARCH_KEYWORD]?.toMutableList() ?: return@edit
             current.remove(keyword)
-            preferences[SEARCH_KEYWORD] = current
+            preferences[SEARCH_KEYWORD] = current.toSet()
         }
     }
 
