@@ -9,8 +9,9 @@ data class BookResponse(
     val etag: String,
     val selfLink: String,
     val volumeInfo: VolumeResponse,
+    val saleInfo: SaleResponse,
 ) : RemoteMapper<BookEntity> {
 
     override fun toData(): BookEntity =
-        BookEntity(kind, id, etag, selfLink, volumeInfo.toData())
+        BookEntity(kind, id, etag, selfLink, volumeInfo.toData(), saleInfo.toData())
 }

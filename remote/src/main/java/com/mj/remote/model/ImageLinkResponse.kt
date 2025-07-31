@@ -9,5 +9,5 @@ data class ImageLinkResponse(
 ): RemoteMapper<ImageLinksEntity> {
 
     override fun toData(): ImageLinksEntity =
-        ImageLinksEntity(smallThumbnail, thumbnail)
+        ImageLinksEntity(smallThumbnail.orEmpty(), thumbnail.orEmpty())
 }

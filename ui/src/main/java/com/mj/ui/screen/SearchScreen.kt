@@ -75,6 +75,8 @@ import coil3.request.crossfade
 import coil3.request.fallback
 import com.mj.presentation.search.model.BookModel
 import com.mj.presentation.search.model.ImageLinksModel
+import com.mj.presentation.search.model.PriceModel
+import com.mj.presentation.search.model.SaleModel
 import com.mj.presentation.search.model.VolumeModel
 import com.mj.presentation.search.search.BookSearchViewModel
 import com.mj.ui.R
@@ -163,7 +165,7 @@ private fun SearchScreenContent(
 private fun ColumnScope.BookList(
     searchStart: Boolean,
     items: LazyPagingItems<BookModel>,
-    ) {
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -176,7 +178,7 @@ private fun ColumnScope.BookList(
                 items(count = items.itemCount) { index ->
                     val book = items[index]
                     if (book != null) {
-                        BookItem(book.volumeInfo)
+                        BookItem(book)
                     } else {
                         EmptyItem()
                     }
@@ -237,7 +239,9 @@ private fun SearchDetail(
 
             //androidx.compose.material3.tokens.IconButtonTokens.StateLayerSize = 40.dp
             Row(
-                modifier = Modifier.fillMaxWidth().height(40.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
@@ -278,7 +282,7 @@ private fun SearchDetail(
                                         val result = index % 2 == 0
                                         if (result) {
                                             selectRemovable = true
-                                        }else {
+                                        } else {
                                             onDeleteAllKeywords()
                                         }
                                         expanded = false
@@ -416,16 +420,22 @@ private fun LazyPagingItems<BookModel>.NextLoadFailItem(e: LoadState.Error) {
 }
 
 @Composable
-private fun BookItem(data: VolumeModel) {
+private fun BookItem(data: BookModel) {
+    val volume = data.volumeInfo
+    val sale = data.saleInfo
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
+
+        Log.d("test" , sale.toString())
+
         AsyncImage(
             modifier = Modifier.size(100.dp),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(data.imageLinks.smallThumbnail)
+                .data(data.volumeInfo.imageLinks.smallThumbnail)
                 .fallback(R.drawable.baseline_image_not_supported_24)
                 .crossfade(true)
                 .build(),
@@ -436,12 +446,15 @@ private fun BookItem(data: VolumeModel) {
         )
 
         Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start,
         ) {
-            Text(text = data.title, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, color = Color.Black, fontWeight = FontWeight.Bold)
-            Text(text = data.authors.firstOrNull() ?: "정보 없음", fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Black)
-            Text(text = data.publishedDate, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Black)
+            Text(text = volume.title, fontSize = 16.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(text = volume.authors.firstOrNull() ?: "정보 없음", fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Black)
+            Text(text = volume.publishedDate, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = Color.Black)
         }
     }
 }
@@ -538,18 +551,32 @@ private fun QueryTextField(
 private fun BookItemPreview() {
     PreviewTheme {
 
-        val info = VolumeModel(
-            title = "미리보기 책 제목",
-            authors = listOf("작가 1", "작가 2"),
-            publishedDate = "2023-01-01",
-            printType = "book",
-            infoLink = "",
-            imageLinks = ImageLinksModel(
-                smallThumbnail = "",
-                thumbnail = "",
+        val volume =BookModel(
+            id = "1",
+            etag = "",
+            selfLink = "",
+            volumeInfo =  VolumeModel(
+                title = "미리보기 책 제목",
+                authors = listOf("작가 1", "작가 2"),
+                publishedDate = "2023-01-01",
+                printType = "book",
+                infoLink = "",
+                imageLinks = ImageLinksModel(
+                    smallThumbnail = "",
+                    thumbnail = "",
+                )
+            ),
+            saleInfo = SaleModel(
+                saleability = "FOR_SALE",
+                buyLink = "",
+                listPrice = PriceModel(
+                    amount = 10000,
+                    currencyCode = "KRW"
+                )
             )
         )
-        BookItem(info)
+
+        BookItem(volume)
     }
 }
 
@@ -572,6 +599,14 @@ private fun SearchScreenPreview() {
                     imageLinks = ImageLinksModel(
                         smallThumbnail = "",
                         thumbnail = "",
+                    )
+                ),
+                saleInfo = SaleModel(
+                    saleability = "FOR_SALE",
+                    buyLink = "",
+                    listPrice = PriceModel(
+                        amount = 10000,
+                        currencyCode = "KRW"
                     )
                 )
             )

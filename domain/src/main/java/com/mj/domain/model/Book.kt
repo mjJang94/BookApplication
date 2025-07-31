@@ -6,4 +6,5 @@ data class Book(
     val etag: String,
     val selfLink: String,
     val volumeInfo: Volume,
+    val saleInfo: Sale,
 )

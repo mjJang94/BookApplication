@@ -7,11 +7,13 @@ data class BookModel(
     val etag: String,
     val selfLink: String,
     val volumeInfo: VolumeModel,
+    val saleInfo: SaleModel,
 )
 
 fun Book.toPresentation(): BookModel = BookModel(
     id,
     etag,
     selfLink,
-    volumeInfo.toPresentation()
+    volumeInfo.toPresentation(),
+    saleInfo.toPresentation(),
 )
